@@ -9,10 +9,21 @@ use Illuminate\Support\Facades\Storage;
 
 class RealEstateController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $realEstates = RealEstate::latest()->paginate(10);
-        return view('real-estates.index', compact('realEstates'));
+        $location = $request->query('location');
+    
+         $query = RealEstate::query();
+
+    if ($location) {
+        $query->where('location', $location);
+    }
+
+    $realEstates = $query->latest()->paginate(10);
+    $locations = ['Beograd', 'Novi Sad', 'Čačak', 'Niš'];
+
+    return view('real-estates.index', compact('realEstates', 'locations', 'location'));
+
     }
 
     public function create()
@@ -50,7 +61,6 @@ class RealEstateController extends Controller
         if ($realEstate->user_id !== Auth::id()) {
             abort(403);
         }
-
         $cities = ['Beograd', 'Novi Sad', 'Čačak', 'Niš'];
         return view('real-estates.edit', compact('realEstate', 'cities'));
     }
@@ -58,8 +68,8 @@ class RealEstateController extends Controller
     public function update(Request $request, RealEstate $realEstate)
     {
         if ($realEstate->user_id !== Auth::id()) {
-            abort(403);
-        }
+        abort(403);
+    }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -70,18 +80,27 @@ class RealEstateController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('real-estates', 'public');
-            $realEstate->image = $path;
+            Storage::disk('public')->delete($realEstate->image);
+            $validated['image'] = $request->file('image')->store('real-estates', 'public');
+        } else {
+            $validated['image'] = $realEstate->image; // zadrži staru
         }
 
-        $realEstate->update([
-            'name' => $validated['name'],
-            'description' => $validated['description'],
-            'price' => $validated['price'],
-            'location' => $validated['location'],
-            'image' => $realEstate->image,
-        ]);
+        $realEstate->update($validated);
 
         return redirect()->route('real-estates.index')->with('success', 'The property has been updated.');
     }
+
+    public function destroy(RealEstate $realEstate)
+    {
+        if ($realEstate->user_id !== Auth::id()) {
+        abort(403);
+    }
+
+        Storage::disk('public')->delete($realEstate->image);
+        $realEstate->delete();
+
+        return redirect()->route('real-estates.index')->with('success', 'Nekretnina uspešno obrisana.');
+    }
+
 }

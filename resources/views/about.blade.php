@@ -1,3 +1,5 @@
-<x-layout heading="About Us">
-    <p class="text-gray-700">Welcome to the about page</p>
+<x-layout>
+    <div class="text-center py-20">
+        <h1 class="text-4xl font-bold text-blue-600 mb-4">Welcome to About Page</h1>
+    </div>
 </x-layout>

@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/real-estates/{realEstate}/edit', [RealEstateController::class, 'edit'])->name('real-estates.edit');
     Route::put('/real-estates/{realEstate}', [RealEstateController::class, 'update'])->name('real-estates.update');
+    Route::delete('/real-estates/{realEstate}', [RealEstateController::class, 'destroy'])->name('real-estates.destroy');
 
 });
 

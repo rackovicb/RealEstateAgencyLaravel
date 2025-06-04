@@ -2,8 +2,8 @@
 
 @php
     $classes = $active
-        ? 'px-3 py-2 rounded-md text-sm font-semibold text-blue-600 bg-blue-100'
-        : 'px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50';
+    ? 'px-3 py-2 rounded-md text-sm font-semibold text-red-600'
+    : 'px-3 py-2 rounded-md text-sm font-medium text-white hover:text-red-400';
 @endphp
 
 <a href="{{ $href }}" {{ $attributes->merge(['class' => $classes]) }}>
