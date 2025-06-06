@@ -3,8 +3,7 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse ($realEstates as $estate)
-            <div class="bg-white border rounded shadow p-3 w-full max-w-xs mx-auto text-sm">
-
+            <div class="property-card bg-white border rounded shadow p-3 w-full max-w-xs mx-auto text-sm">
                 @if ($estate->image)
                     <div class="w-32 h-32 mx-auto mb-2">
                         <img 
@@ -33,37 +32,5 @@
         @endforelse
     </div>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.favorite-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const estateId = this.dataset.id;
-                const btn = this;
-
-                fetch("/favorites/toggle", {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        real_estate_id: estateId
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'removed') {
-                        // Ukloni karticu iz DOM-a
-                        btn.closest('.bg-white.border.rounded.shadow').remove();
-                    } else {
-                        btn.innerText = 'Remove from Favorites';
-                        btn.classList.remove('bg-blue-500');
-                        btn.classList.add('bg-red-500');
-                    }
-                });
-            });
-        });
-    });
-</script>
-
+    @vite('resources/js/favorites-remove.js')
 </x-layout>
