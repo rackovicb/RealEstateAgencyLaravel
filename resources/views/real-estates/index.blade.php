@@ -1,6 +1,12 @@
 <x-layout>
     <x-slot name="heading">All Estates</x-slot>
 
+    @auth
+    <div class="text-left text-sm text-gray-600 mb-4">
+        Logged in as: <strong>{{ auth()->user()->email }}</strong>
+    </div>
+    @endauth
+
     <form method="GET" class="mb-6 mx-auto w-fit">
         <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Filter by location:</label>
         <select name="location" id="location" class="rounded border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -70,9 +76,51 @@
                         </div>
                     @endif
                 @endauth
+                @auth
+                    <button 
+                        class="favorite-btn w-full bg-blue-500 text-white py-2 text-sm rounded hover:bg-blue-600 transition"
+                        data-id="{{ $estate->id }}">
+                        {{ in_array($estate->id, $favoriteIds ?? []) ? 'Remove from Favorites' : 'Add to Favorites' }}
+                    </button>
+                @endauth
             </div>
         @empty
             <p class="col-span-3 text-center text-gray-500">No properties entered.</p>
         @endforelse
     </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.favorite-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const estateId = this.dataset.id;
+                console.log("ID koji se šalje:", estateId);
+                const btn = this;
+
+                fetch("/favorites/toggle", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        real_estate_id: estateId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'added') {
+                        btn.innerText = 'Remove from Favorites';
+                        btn.classList.remove('bg-blue-500');
+                        btn.classList.add('bg-red-500');
+                    } else {
+                        btn.innerText = 'Add to Favorites';
+                        btn.classList.remove('bg-red-500');
+                        btn.classList.add('bg-blue-500');
+                    }
+                });
+            });
+        });
+    });
+</script>
+
 </x-layout>

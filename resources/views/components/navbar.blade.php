@@ -14,6 +14,7 @@
 
             <div class="flex items-center space-x-4">
                 @auth
+                    <x-nav-link href="{{ route('favorites.index') }}" :active="request()->routeIs('favorites.index')">Favorites</x-nav-link>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button class="text-gray-300 hover:text-white">Logout</button>
